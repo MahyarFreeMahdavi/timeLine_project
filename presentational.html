@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>ارائه پروژه — خط انتقال تعاملی</title>
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    margin: 0; padding: 0;
+    background: #eef1f7;
+    color: #1a237e;
+  }
+  .slide {
+    width: 297mm; height: 210mm;
+    padding: 18mm 22mm;
+    background: #fff;
+    margin: 8mm auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    page-break-after: always;
+    position: relative;
+    border-top: 8px solid #1a237e;
+  }
+  h1 { font-size: 30pt; color: #1a237e; margin: 0 0 8mm; }
+  h2 { font-size: 22pt; color: #1a237e; margin: 0 0 6mm; border-bottom: 2px solid #c5cae9; padding-bottom: 3mm; }
+  h3 { font-size: 16pt; color: #283593; margin: 4mm 0 2mm; }
+  p, li { font-size: 14pt; line-height: 1.9; color: #212121; }
+  ul { padding-right: 8mm; }
+  li { margin: 2mm 0; }
+  .center { text-align: center; }
+  .meta { font-size: 13pt; color: #455a64; margin-top: 4mm; }
+  .formula {
+    background: #e8eaf6; padding: 4mm 6mm; border-radius: 3mm;
+    font-family: 'Cambria Math', serif; font-size: 15pt;
+    text-align: center; margin: 4mm 0; direction: ltr;
+  }
+  .tag {
+    display: inline-block; background: #c5cae9; color: #1a237e;
+    padding: 1mm 4mm; border-radius: 3mm; font-size: 11pt; margin: 0 2mm;
+  }
+  .highlight { color: #c62828; font-weight: bold; }
+  .footer {
+    position: absolute; bottom: 10mm; left: 22mm; right: 22mm;
+    font-size: 10pt; color: #78909c; text-align: center;
+    border-top: 1px solid #cfd8dc; padding-top: 2mm;
+  }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+  .card {
+    background: #f5f7fb; padding: 5mm; border-radius: 3mm;
+    border-right: 4px solid #1a237e;
+  }
+  @media print {
+    body { background: #fff; margin: 0; }
+    .slide { margin: 0; box-shadow: none; page-break-after: always; }
+    @page { size: A4 landscape; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- اسلاید ۱: عنوان -->
+<section class="slide center" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding-top:40mm;">
+  <h1 style="font-size:34pt;">طراحی و تولید محتوای آموزشی تعاملی</h1>
+  <h2 style="font-size:22pt; border:none;">برای درک رفتار خط انتقال در مدار گسترده</h2>
+  <div style="width:60mm; height:3px; background:#c62828; margin:8mm 0;"></div>
+  <p class="meta"><b>دانشجو:</b> &nbsp; [مهیار مهدوی آزاد]</p>
+  <p class="meta"><b>استاد راهنما:</b> &nbsp; [دکتر فاطمه گران]</p>
+  <p class="meta"><b>دانشگاه:</b> &nbsp; [تربیت دبیرشهیدرجایی] &nbsp;|&nbsp; <b>سال:</b> ۱۴۰۵–۱۴۰۶</p>
+</section>
+
+<!-- اسلاید ۲: مسئله و اهداف -->
+<section class="slide">
+  <h2>بیان مسئله و اهداف پروژه</h2>
+  <h3>چالش آموزشی</h3>
+  <ul>
+    <li>مفاهیم انتزاعی خط انتقال (بازتاب، موج ایستا، تطبیق) برای دانشجو دشوار است.</li>
+    <li>معادلات تحلیلی بدون شهود بصری، منجر به یادگیری سطحی می‌شوند.</li>
+    <li>آزمایشگاه فیزیکی پرهزینه و محدود به پارامترهای ثابت است.</li>
+  </ul>
+  <h3>هدف پروژه</h3>
+  <ul>
+    <li>طراحی یک <span class="highlight">آزمایشگاه مجازی تعاملی</span> برای شبیه‌سازی رفتار خط انتقال.</li>
+    <li>کاربر با تغییر <b>Z₀، Z_L، Z_S، طول و فرکانس</b>، اثر آن را بی‌درنگ ببیند.</li>
+    <li>یادگیری شهودی مفاهیم: <span class="highlight">بازتاب، ضریب بازتاب، VSWR و تطبیق امپدانس</span>.</li>
+  </ul>
+</section>
+
+<!-- اسلاید ۳: مبانی نظری -->
+<section class="slide">
+  <h2>مبانی نظری</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>ضریب بازتاب</h3>
+      <div class="formula">Γ_L = (Z_L − Z₀) / (Z_L + Z₀)</div>
+      <p>نسبت موج بازتابی به موج فرودی در محل بار.</p>
+    </div>
+    <div class="card">
+      <h3>نسبت موج ایستا</h3>
+      <div class="formula">VSWR = (1+|Γ|) / (1−|Γ|)</div>
+      <p>معیاری از ناهماهنگی امپدانس.</p>
+    </div>
+    <div class="card">
+      <h3>امپدانس ورودی</h3>
+      <div class="formula">Z_in = Z₀ (Z_L + jZ₀tanβl) / (Z₀ + jZ_L tanβl)</div>
+    </div>
+    <div class="card">
+      <h3>شرط تطبیق</h3>
+      <p><b>Z_L = Z₀ ⟹ Γ = 0، VSWR = 1</b></p>
+      <p>حداکثر انتقال توان به بار.</p>
+    </div>
+  </div>
+</section>
+
+<!-- اسلاید ۴: معماری نرم‌افزار -->
+<section class="slide">
+  <h2>معماری و پیاده‌سازی</h2>
+  <h3>فناوری‌ها</h3>
+  <ul>
+    <li><b>Streamlit:</b> رابط کاربری تعاملی تحت وب.</li>
+    <li><b>NumPy:</b> محاسبات برداری و شبیه‌سازی زمانی.</li>
+    <li><b>Plotly:</b> نمودارهای تعاملی و راست‌چین.</li>
+  </ul>
+  <h3>ساختار ماژولار</h3>
+  <ul>
+    <li><code>core.py</code> — توابع محاسباتی: Γ، VSWR، Z_in، الگوی موج ایستا، شبیه‌سازی گذرا.</li>
+    <li><code>app.py</code> — لایه نمایش و رابط فارسی (RTL).</li>
+  </ul>
+  <h3>الگوریتم شبیه‌سازی گذرا</h3>
+  <ul>
+    <li>روش <b>دیاگرام بازتاب</b> بر پایه سری هندسی بازتاب‌های متوالی.</li>
+    <li>محاسبه V(z,t) و I(z,t) در هر لحظه با جمع جبهه‌های موج.</li>
+  </ul>
+</section>
+
+<!-- اسلاید ۵: قابلیت‌ها -->
+<section class="slide">
+  <h2>قابلیت‌های نرم‌افزار</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>📊 الگوی موج ایستا</h3>
+      <p>نمایش |V(z)| و |I(z)| در طول خط برای حالت سینوسی ماندگار.</p>
+    </div>
+    <div class="card">
+      <h3>🎬 انتشار گذرای موج</h3>
+      <p>انیمیشن حرکت جبهه موج و بازتاب‌های متوالی با کنترل زمان.</p>
+    </div>
+    <div class="card">
+      <h3>🔁 دیاگرام بازتاب</h3>
+      <p>نمایش مسیرهای رفت و برگشت موج بین منبع و بار.</p>
+    </div>
+    <div class="card">
+      <h3>📈 متریک‌های لحظه‌ای</h3>
+      <p>Γ_L، Γ_S، VSWR و Z_in به‌صورت بی‌درنگ محاسبه می‌شوند.</p>
+    </div>
+  </div>
+  <p style="margin-top:6mm; text-align:center;">
+    <span class="tag">رابط فارسی</span>
+    <span class="tag">راست‌چین کامل</span>
+    <span class="tag">تعاملی و بلادرنگ</span>
+    <span class="tag">تحت وب</span>
+  </p>
+</section>
+
+<!-- اسلاید ۶: سناریوهای آموزشی -->
+<section class="slide">
+  <h2>سناریوهای آموزشی تعبیه‌شده</h2>
+  <ul>
+    <li><b>تطبیق امپدانس:</b> Z_L = Z₀ ⟹ Γ=0، VSWR=1، نبود موج ایستا.</li>
+    <li><b>مدار باز:</b> Z_L → ∞ ⟹ Γ→+1، ولتاژ در بار دو برابر می‌شود.</li>
+    <li><b>اتصال کوتاه:</b> Z_L = 0 ⟹ Γ = −1، ولتاژ در بار صفر می‌شود.</li>
+    <li><b>بار راکتیو:</b> تغییر فاز Γ و جابجایی مینیمم‌های موج ایستا.</li>
+    <li><b>اثر Γ_S:</b> مشاهده بازتاب چندگانه در صورت عدم تطبیق منبع.</li>
+  </ul>
+  <p style="margin-top:6mm;"><b>نتیجه:</b> یادگیرنده به‌جای حفظ فرمول، رابطه علت–معلولی پارامترها را <span class="highlight">شهودی</span> درک می‌کند.</p>
+</section>
+
+<!-- اسلاید ۷: اعتبارسنجی -->
+<section class="slide">
+  <h2>اعتبارسنجی نتایج</h2>
+  <h3>مقایسه با مقادیر تحلیلی</h3>
+  <ul>
+    <li>حالت ماندگار: مقدار VSWR خروجی با فرمول تحلیلی مطابقت کامل دارد.</li>
+    <li>حالت گذرا: دامنه نهایی با سری هندسی V⁺/(1−Γ_SΓ_L) همخوانی دارد.</li>
+    <li>حالت تطبیق: Γ=0 در خروجی و عدم مشاهده بازتاب در انیمیشن.</li>
+  </ul>
+  <h3>محدودیت‌ها و توسعه‌های آینده</h3>
+  <ul>
+    <li>افزودن خطوط با تلفات (α ≠ 0).</li>
+    <li>پشتیبانی از بار راکتیو دلخواه (Z_L = R + jX).</li>
+    <li>افزودن اسمیت چارت تعاملی.</li>
+    <li>خروجی گزارش‌گیری برای دانشجو.</li>
+  </ul>
+</section>
+
+<!-- اسلاید ۸: جمع‌بندی -->
+<section class="slide center" style="display:flex; flex-direction:column; justify-content:center; align-items:center;">
+  <h1 style="font-size:28pt;">جمع‌بندی و قدردانی</h1>
+  <div style="width:40mm; height:3px; background:#c62828; margin:8mm 0;"></div>
+  <ul style="text-align:right; font-size:15pt; max-width:220mm; margin-top:10mm;">
+    <li>محتوای آموزشی تعاملی تحت وب با استریم‌لیت پیاده‌سازی شد.</li>
+    <li>تمام مفاهیم هدف (بازتاب، VSWR، تطبیق) به‌صورت شهودی قابل مشاهده‌اند.</li>
+    <li>معماری ماژولار آماده توسعه‌های آینده است.</li>
+  </ul>
+  <p style="margin-top:20mm; font-size:16pt;">از توجه شما سپاسگزارم 🙏</p>
+</section>
+
+</body>
+</html>

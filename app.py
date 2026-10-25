@@ -35,7 +35,7 @@ st.set_page_config(page_title="آزمایشگاه تعاملی خط انتقال
                    page_icon="⚡", layout="wide")
 
 
-# ==================== CSS راست‌چین ====================
+# ==================== CSS راست‌چین و ریسپانسیو ====================
 st.markdown(f"""
 <style>
 {FONT_CSS}
@@ -50,6 +50,31 @@ html, body, .stApp, [class*="css"] {{
 div[data-testid="stMetricValue"] {{ text-align: right; }}
 code, pre, .katex {{ direction: ltr !important; text-align: left !important; }}
 [data-testid="stPlotlyChart"] {{ direction: ltr !important; }}
+
+/* ---------- تنظیمات مخصوص موبایل ---------- */
+@media (max-width: 768px) {{
+    /* حذف حاشیه سایدبار در موبایل تا محتوا کامل دیده شود */
+    [data-testid="stAppViewContainer"] > section.main, 
+    section.main {{
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        padding-top: 1rem !important;
+    }}
+    
+    /* اسکرول افقی برای تب‌ها در موبایل */
+    [data-baseweb="tab-list"] {{
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        white-space: nowrap !important;
+    }}
+    
+    /* کوچک کردن فونت متریک‌ها در موبایل */
+    [data-testid="stMetricValue"] {{
+        font-size: 1.2rem !important;
+    }}
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -94,11 +119,11 @@ zin = input_impedance(Z0, ZL, beta * length)
 
 
 # ==================== متریک‌ها ====================
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("ضریب بازتاب بار Γ_L",
-          f"{abs(GL):.3f} ∠{np.angle(GL, deg=True):.0f}°")
-c2.metric("ضریب بازتاب منبع Γ_S",
-          f"{abs(GS):.3f} ∠{np.angle(GS, deg=True):.0f}°")
+c1, c2 = st.columns(2)
+c1.metric("ضریب بازتاب بار Γ_L", f"{abs(GL):.3f} ∠{np.angle(GL, deg=True):.0f}°")
+c2.metric("ضریب بازتاب منبع Γ_S", f"{abs(GS):.3f} ∠{np.angle(GS, deg=True):.0f}°")
+
+c3, c4 = st.columns(2)
 c3.metric("VSWR", "∞" if np.isinf(swr) else f"{swr:.2f}")
 sign = "+" if zin.imag >= 0 else "−"
 c4.metric("Z_in (Ω)", f"{zin.real:.1f} {sign} {abs(zin.imag):.1f}j")
@@ -122,7 +147,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
 
 # ---------- تب ۱: موج ایستا ----------
 with tab1:
-    st.subheader("توزیع دامنه ولتاژ و جریان در طول خط (حالت سینوسی ماندگار)")
+    st.subheader("توزیع دامنه ولتاژ و جریان در طول خط")
     z, V, I, lam = standing_wave_pattern(Z0, ZL, length, freq, vp)
 
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
@@ -136,24 +161,20 @@ with tab1:
                   row=2, col=1)
     fig.update_xaxes(title_text="موقعیت روی خط (m)", row=2, col=1)
     for col in (1, 2):
-        fig.add_vline(x=0, line_dash="dot", line_color="gray",
-                      row=col, col=1)
-        fig.add_vline(x=length, line_dash="dot", line_color="gray",
-                      row=col, col=1)
+        fig.add_vline(x=0, line_dash="dot", line_color="gray", row=col, col=1)
+        fig.add_vline(x=length, line_dash="dot", line_color="gray", row=col, col=1)
     if reverse_x:
         fig.update_xaxes(autorange="reversed")
-    fig.update_layout(template="plotly_white", height=520,
-                      font=PLOTLY_FONT,
-                      legend=dict(orientation="h", yanchor="bottom", y=1.02,
-                                  x=1, xanchor="right"),
-                      margin=dict(t=50, b=50))
+    # ارتفاع نمودار کمی کوتاه‌تر شد تا در موبایل بهتر جا شود
+    fig.update_layout(template="plotly_white", height=450, font=PLOTLY_FONT,
+                      legend=dict(orientation="h", yanchor="bottom", y=1.02, x=1, xanchor="right"),
+                      margin=dict(t=40, b=40))
     st.plotly_chart(fig, use_container_width=True)
 
     if abs(GL) > 0.02:
         vmax = 1 + abs(GL)
         vmin = 1 - abs(GL)
-        st.caption(f"V_max = {vmax:.3f}  |  V_min = {vmin:.3f}  |  "
-                   f"VSWR = {vmax/vmin:.2f}")
+        st.caption(f"V_max = {vmax:.3f}  |  V_min = {vmin:.3f}  |  VSWR = {vmax/vmin:.2f}")
 
 
 # ---------- تب ۲: انتشار گذرا ----------
@@ -164,8 +185,7 @@ with tab2:
     @st.cache_data(show_spinner="در حال محاسبه…")
     def _bounce(Z0, ZL, Zs, Vs, length, vp, n_refl):
         return bounce_simulate(Z0, ZL, Zs, Vs, length, vp,
-                               n_reflections=n_refl,
-                               n_frames=180, n_z=250)
+                               n_reflections=n_refl, n_frames=180, n_z=250)
 
     z_arr, t_arr, V_t, I_t, _, _ = _bounce(Z0, ZL, Zs, Vs, length, vp, n_refl)
     frame = st.slider("⏱ زمان", 0, len(t_arr) - 1, 0, format="فریم %d")
@@ -175,39 +195,28 @@ with tab2:
                          subplot_titles=("ولتاژ (V)", "جریان (A)"),
                          vertical_spacing=0.15)
     fig2.add_trace(go.Scatter(x=z_arr, y=V_t[frame], name="V(z,t)",
-                              line=dict(color="#1565c0", width=3)),
-                   row=1, col=1)
+                              line=dict(color="#1565c0", width=3)), row=1, col=1)
     fig2.add_trace(go.Scatter(x=z_arr, y=I_t[frame] * Z0, name="I(z,t)·Z₀",
-                              line=dict(color="#c62828", width=2, dash="dash")),
-                   row=2, col=1)
-    fig2.update_xaxes(title_text=f"موقعیت (m)   |   t = {t_now:.2f} ns",
-                      row=2, col=1)
+                              line=dict(color="#c62828", width=2, dash="dash")), row=2, col=1)
+    fig2.update_xaxes(title_text=f"موقعیت (m)   |   t = {t_now:.2f} ns", row=2, col=1)
     for col in (1, 2):
-        fig2.add_vline(x=0, line_dash="dot", line_color="gray",
-                       row=col, col=1)
-        fig2.add_vline(x=length, line_dash="dot", line_color="gray",
-                       row=col, col=1)
+        fig2.add_vline(x=0, line_dash="dot", line_color="gray", row=col, col=1)
+        fig2.add_vline(x=length, line_dash="dot", line_color="gray", row=col, col=1)
     if reverse_x:
         fig2.update_xaxes(autorange="reversed")
-    fig2.update_layout(template="plotly_white", height=520,
-                       font=PLOTLY_FONT,
-                       legend=dict(orientation="h", yanchor="bottom", y=1.02,
-                                   x=1, xanchor="right"),
-                       margin=dict(t=50, b=50))
+    fig2.update_layout(template="plotly_white", height=450, font=PLOTLY_FONT,
+                       legend=dict(orientation="h", yanchor="bottom", y=1.02, x=1, xanchor="right"),
+                       margin=dict(t=40, b=40))
     st.plotly_chart(fig2, use_container_width=True)
-    st.caption("💡 اسلایدر را بکشید تا حرکت جبهه موج، بازتاب از بار و برگشت به منبع را ببینید.")
-
-    # نقشه حرارتی
-    st.subheader("🗺️ نقشه انتشار موج (ولتاژ بر حسب فاصله و زمان)")
+    
+    st.subheader("🗺️ نقشه انتشار موج")
     fig_heat = go.Figure(data=go.Heatmap(
         z=V_t, x=z_arr, y=t_arr * 1e9, colorscale="RdBu_r",
         colorbar=dict(title="V (volts)")))
-    fig_heat.update_layout(template="plotly_white", height=420,
-                           font=PLOTLY_FONT,
-                           xaxis_title="فاصله (m)",
-                           yaxis_title="زمان (ns)",
+    fig_heat.update_layout(template="plotly_white", height=350, font=PLOTLY_FONT,
+                           xaxis_title="فاصله (m)", yaxis_title="زمان (ns)",
                            yaxis=dict(autorange="reversed"),
-                           margin=dict(t=30, b=50))
+                           margin=dict(t=20, b=40))
     if reverse_x:
         fig_heat.update_xaxes(autorange="reversed")
     st.plotly_chart(fig_heat, use_container_width=True)
@@ -224,26 +233,19 @@ with tab3:
         fig3.add_trace(go.Scatter(
             x=[0, length], y=[t0 * 1e9, (t0 + T) * 1e9],
             mode="lines", line=dict(color="#1565c0", width=2),
-            showlegend=(k == 0),
-            name="→ موج فرودی" if k == 0 else None))
+            showlegend=(k == 0), name="→ موج فرودی" if k == 0 else None))
         fig3.add_trace(go.Scatter(
             x=[length, 0], y=[(t0 + T) * 1e9, (t0 + 2 * T) * 1e9],
             mode="lines", line=dict(color="#c62828", width=2),
-            showlegend=(k == 0),
-            name="← موج بازتابی" if k == 0 else None))
+            showlegend=(k == 0), name="← موج بازتابی" if k == 0 else None))
     if reverse_x:
         fig3.update_xaxes(autorange="reversed")
-    fig3.update_layout(template="plotly_white", height=500,
-                       font=PLOTLY_FONT,
-                       xaxis_title="موقعیت (m)",
-                       yaxis_title="زمان (ns)",
-                       legend=dict(orientation="h", yanchor="bottom",
-                                   y=1.02, x=1, xanchor="right"),
-                       margin=dict(t=30, b=50))
+    fig3.update_layout(template="plotly_white", height=450, font=PLOTLY_FONT,
+                       xaxis_title="موقعیت (m)", yaxis_title="زمان (ns)",
+                       legend=dict(orientation="h", yanchor="bottom", y=1.02, x=1, xanchor="right"),
+                       margin=dict(t=40, b=40))
     st.plotly_chart(fig3, use_container_width=True)
-    st.caption(f"زمان یک‌طرفه T = l/v_p = {T*1e9:.2f} ns — "
-               f"Γ_L = {abs(GL):.2f}∠{np.angle(GL,deg=True):.0f}°  |  "
-               f"Γ_S = {abs(GS):.2f}∠{np.angle(GS,deg=True):.0f}°")
+    st.caption(f"زمان یک‌طرفه T = l/v_p = {T*1e9:.2f} ns — Γ_L = {abs(GL):.2f}∠{np.angle(GL,deg=True):.0f}°  |  Γ_S = {abs(GS):.2f}∠{np.angle(GS,deg=True):.0f}°")
 
 
 # ---------- تب ۴: راهنما ----------
